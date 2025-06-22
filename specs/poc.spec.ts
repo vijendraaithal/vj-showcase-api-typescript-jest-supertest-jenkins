@@ -31,4 +31,11 @@ describe('GET Requests', () => {
         expect(res.body[3].email).toEqual('Lew@alysha.tv');
         expect(res.body[4].email).toEqual('Hayden@althea.biz');
     });
+
+    it('GET /comments?postId={id}', async() => {
+        const res = await req.get('/comments')
+            .query({postId: 1});
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.length).toBeGreaterThanOrEqual(5);
+    }, 10000);
 });
