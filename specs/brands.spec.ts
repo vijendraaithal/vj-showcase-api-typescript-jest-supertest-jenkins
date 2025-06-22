@@ -34,7 +34,7 @@ describe('Brand API Test Suite', () => {
                 newBrand = res.body;
             });
 
-            it('Schema Verification - Name is mandatory field', async() => {
+            it('Schema Validation - Name is mandatory field', async() => {
                 const brandName = '';
                 const data = {
                     name: brandName,
@@ -44,7 +44,25 @@ describe('Brand API Test Suite', () => {
                     .send(data);
                 expect(res.statusCode).toEqual(422);
                 expect(res.body.error).toEqual('Name is required');
-            }, 30000);
+            });
+
+            it('Business Logic - Duplicate brand entries are not allowed', async() => {
+                const brandName = "BN" 
+                    + faker.company.buzzVerb() 
+                    + faker.string.alpha({length: {min: 5, max: 7}});
+                const data = {
+                    name: brandName,
+                    description: "BD" + brandName
+                }
+                const res = await req.post('/brands')
+                    .send(data);
+                expect(res.statusCode).toEqual(200);
+                const res2 = await req.post('/brands')
+                    .send(data);
+                expect(res2.statusCode).toEqual(422);
+                const expectedErrorMessage= `${brandName} already exists`;
+                expect(res2.body.error).toEqual(expectedErrorMessage);
+            });
         });
 
         it('GET Brand', async() => {
