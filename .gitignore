@@ -1,0 +1,36 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.js.map
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Coverage directory used by tools like istanbul and Jest
+coverage/
+.nyc_output/
+
+# Jest snapshot files
+__snapshots__/
+
+# Environment variables
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# Optional VSCode settings
+.vscode/
+
+# Editor/OS temporary files
+.DS_Store
+Thumbs.db
