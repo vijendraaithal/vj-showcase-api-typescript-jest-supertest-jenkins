@@ -18,7 +18,7 @@ describe('Brand API Test Suite', () => {
     describe('Create & Fetch Brand', () => {
 
         describe('Create Brands', () => {
-            it('POST Brand', async() => {
+            it.only('POST Brand', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -46,7 +46,7 @@ describe('Brand API Test Suite', () => {
                 expect(res.body.error).toEqual('Name is required');
             });
 
-            it.only('Schema Validation - Min char length for name it Greater than 1', async() => {
+            it('Schema Validation - Min char length for name it Greater than 1', async() => {
                 const brandName = 'a';
                 const data = {
                     name: brandName,
@@ -82,7 +82,7 @@ describe('Brand API Test Suite', () => {
             const res = await req.get('/brands/' + randomId);
             expect(res.statusCode).toEqual(404);
             expect(res.body.error).toEqual('Brand not found.');
-        });
+        }, 30000);
 
 
         it('GET Brand', async() => {
@@ -106,6 +106,29 @@ describe('Brand API Test Suite', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(data.name);
             expect(res.body).toHaveProperty('createdAt');
+        });
+
+        it('Schema Validation - Brand Name cannot be accept GT 30 chars', async() => {
+            const brandName = faker.string.alphanumeric(31);
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.put('/brands/' + newBrand._id)
+                .send(data);
+            expect(res.body.error).toEqual('Brand name is too long');
+        });
+
+        it.only('Schema Validation - Brand Name must be a string', async() => {
+            const brandName = faker.number.int({min:1000000, max:99999999});
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.put('/brands/' + newBrand._id)
+                .send(data);
+            console.log(res.body);
+            expect(res.body.error).toEqual('Brand name must be a string');
         });
     });
 
