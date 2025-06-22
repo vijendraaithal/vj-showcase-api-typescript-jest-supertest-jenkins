@@ -16,20 +16,35 @@ describe('Brand API Test Suite', () => {
     });
 
     describe('Create & Fetch Brand', () => {
-        it('POST Brand', async() => {
-            const brandName = "BN" 
-                + faker.company.buzzVerb() 
-                + faker.string.alpha({length: {min: 5, max: 7}});
-            const data = {
-                name: brandName,
-                description: "BD" + brandName
-            }
-            const res = await req.post('/brands')
-                .send(data);
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toEqual(data.name);
-            expect(res.body).toHaveProperty('createdAt');
-            newBrand = res.body;
+
+        describe('Create Brands', () => {
+            it('POST Brand', async() => {
+                const brandName = "BN" 
+                    + faker.company.buzzVerb() 
+                    + faker.string.alpha({length: {min: 5, max: 7}});
+                const data = {
+                    name: brandName,
+                    description: "BD" + brandName
+                }
+                const res = await req.post('/brands')
+                    .send(data);
+                expect(res.statusCode).toEqual(200);
+                expect(res.body.name).toEqual(data.name);
+                expect(res.body).toHaveProperty('createdAt');
+                newBrand = res.body;
+            });
+
+            it('Schema Verification - Name is mandatory field', async() => {
+                const brandName = '';
+                const data = {
+                    name: brandName,
+                    description: "BD" + brandName
+                }
+                const res = await req.post('/brands')
+                    .send(data);
+                expect(res.statusCode).toEqual(422);
+                expect(res.body.error).toEqual('Name is required');
+            }, 30000);
         });
 
         it('GET Brand', async() => {
