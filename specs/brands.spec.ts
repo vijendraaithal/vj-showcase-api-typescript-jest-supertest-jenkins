@@ -46,6 +46,18 @@ describe('Brand API Test Suite', () => {
                 expect(res.body.error).toEqual('Name is required');
             });
 
+            it.only('Schema Validation - Min char length for name it Greater than 1', async() => {
+                const brandName = 'a';
+                const data = {
+                    name: brandName,
+                    description: "BD" + brandName
+                }
+                const res = await req.post('/brands')
+                    .send(data);
+                expect(res.statusCode).toEqual(422);
+                expect(res.body.error).toEqual('Brand name is too short');
+            });
+
             it('Business Logic - Duplicate brand entries are not allowed', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
