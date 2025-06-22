@@ -65,6 +65,14 @@ describe('Brand API Test Suite', () => {
             });
         });
 
+        it('Business Logic Validation - GET Brand on invalid id', async() => {
+            const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
+            const res = await req.get('/brands/' + randomId);
+            expect(res.statusCode).toEqual(404);
+            expect(res.body.error).toEqual('Brand not found.');
+        });
+
+
         it('GET Brand', async() => {
             const res = await req.get('/brands/' + newBrand._id);
             expect(res.statusCode).toEqual(200);
