@@ -11,4 +11,13 @@ describe('GET Requests', () => {
         expect(res.body[0]).toHaveProperty('title');
         expect(res.body[0]).toHaveProperty('body');
     });
+
+    it('GET /posts/{id}', async() => {
+        const res = await req.get('/posts/1');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.userId).toEqual(1);
+        expect(res.body.id).toEqual(1);
+        expect(res.body.title).toContain('occaecati');
+        expect(res.body.body).toContain('consequuntur');
+    });
 });
