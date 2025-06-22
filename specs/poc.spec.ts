@@ -39,3 +39,18 @@ describe('GET Requests', () => {
         expect(res.body.length).toBeGreaterThanOrEqual(5);
     }, 10000);
 });
+
+describe('POST Requests', () => {
+    it('PUT /posts/{id}', async() => {
+        const data = {
+            "userId": 1,
+            "title": "New Title",
+            "body": "New Body"
+        }
+        const res = await req.post('/posts')
+            .send(data);
+        expect(res.statusCode).toEqual(201);
+        expect(res.body.title).toEqual(data.title);
+        expect(res.body.body).toEqual(data.body);
+    });
+});
