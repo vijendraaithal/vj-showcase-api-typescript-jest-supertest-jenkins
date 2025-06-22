@@ -20,4 +20,15 @@ describe('GET Requests', () => {
         expect(res.body.title).toContain('occaecati');
         expect(res.body.body).toContain('consequuntur');
     });
+
+    it('GET /posts/{id}/comments', async() => {
+        const res = await req.get('/posts/1/comments');
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.length).toBeGreaterThanOrEqual(5);
+        expect(res.body[0].email).toEqual('Eliseo@gardner.biz');
+        expect(res.body[1].email).toEqual('Jayne_Kuhic@sydney.com');
+        expect(res.body[2].email).toEqual('Nikita@garfield.biz');
+        expect(res.body[3].email).toEqual('Lew@alysha.tv');
+        expect(res.body[4].email).toEqual('Hayden@althea.biz');
+    });
 });
