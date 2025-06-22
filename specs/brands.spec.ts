@@ -2,12 +2,13 @@ import * as supertest from 'supertest';
 const req = supertest('https://practice-react.sdetunicorns.com/api/test');
 
 describe('Brands', () => {
-    it('GET Brands', async() => {
+    it.only('GET Brands', async() => {
         const res = await req.get('/brands');
         expect(res.statusCode).toEqual(200);
         expect(res.body.length).toBeGreaterThanOrEqual(1);
         expect(res.body[0]).toHaveProperty('_id');
         expect(res.body[0]).toHaveProperty('name');
+        expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
     }, 10000);
 
     it('GET Brand', async() => {
@@ -16,5 +17,3 @@ describe('Brands', () => {
         expect(res.body.name).toEqual('apple');
     });
 });
-
-
