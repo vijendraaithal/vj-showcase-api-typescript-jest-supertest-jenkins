@@ -34,3 +34,6 @@ __snapshots__/
 # Editor/OS temporary files
 .DS_Store
 Thumbs.db
+
+# playwright runner - accidental click in VSCode
+test-results/
