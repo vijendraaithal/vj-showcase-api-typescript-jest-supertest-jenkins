@@ -13,15 +13,9 @@ describe('Brand API Test Suite', () => {
             expect(res.body[0]).toHaveProperty('name');
             expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
         },10000);
-
-        it('GET Brand', async() => {
-            const res = await req.get('/brands/6628a70b986188d4dce47f4f');
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toEqual('apple');
-        });
     });
 
-    describe('Create Brand', () => {
+    describe('Create & Fetch Brand', () => {
         it('POST Brand', async() => {
             const brandName = "BN" 
                 + faker.company.buzzVerb() 
@@ -36,9 +30,12 @@ describe('Brand API Test Suite', () => {
             expect(res.body.name).toEqual(data.name);
             expect(res.body).toHaveProperty('createdAt');
             newBrand = res.body;
-            // Below code for checking purpose - to remove in next commit
-            console.log("Printing the created brand");
-            console.log(newBrand);
+        });
+
+        it('GET Brand', async() => {
+            const res = await req.get('/brands/' + newBrand._id);
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.name).toEqual(newBrand.name);
         });
     });
 
@@ -56,9 +53,6 @@ describe('Brand API Test Suite', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(data.name);
             expect(res.body).toHaveProperty('createdAt');
-            // Below code for checking purpose - to remove in next commit
-            console.log("Printing the updated brand");
-            console.log(res.body);
         });
     });
 
