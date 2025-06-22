@@ -54,3 +54,18 @@ describe('POST Requests', () => {
         expect(res.body.body).toEqual(data.body);
     });
 });
+
+describe('PUT Requests', () => {
+    it('PUT /posts/{id}', async() => {
+        const data = {
+            "userId": 1,
+            "title": "Updated Title",
+            "body": "New Body"
+        }
+        const res = await req.put('/posts/1')
+            .send(data);
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.title).toEqual(data.title);
+        expect(res.body.body).toEqual(data.body);
+    });
+});
