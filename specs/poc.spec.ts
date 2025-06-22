@@ -81,3 +81,11 @@ describe('PATCH Requests', () => {
         expect(res.body.title).toEqual(data.title);
     });
 });
+
+describe('DELETE Requests', () => {
+    it('DELETE /posts/{id}', async() => {
+        const res = await req.delete('/posts/1')
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual({})
+    });
+});
