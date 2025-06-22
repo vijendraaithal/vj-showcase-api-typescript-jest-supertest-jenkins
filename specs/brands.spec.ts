@@ -1,5 +1,6 @@
 import * as supertest from 'supertest';
 const req = supertest('https://practice-react.sdetunicorns.com/api/test');
+import {faker} from '@faker-js/faker';
 
 describe('Fetch Brands', () => {
     it('GET Brands', async() => {
@@ -21,9 +22,12 @@ describe('Fetch Brands', () => {
 describe('Create Brand', () => {
     
     it.only('POST Brand', async() => {
+        const brandName = "BN" 
+            + faker.company.buzzVerb() 
+            + faker.string.alpha({length: {min: 5, max: 7}});
         const data = {
-            name: 'vj-test-brand 22Jun25 Set 01',
-            description: 'Description vj-test-brand 22Jun25 Set 01'
+            name: brandName,
+            description: "BD" + brandName
         }
         const res = await req.post('/brands')
             .send(data);

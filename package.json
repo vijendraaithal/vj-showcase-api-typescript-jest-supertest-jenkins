@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/vijendraaithal/vj-showcase-api-typescript-jest-supertest-jenkins#readme",
   "devDependencies": {
+    "@faker-js/faker": "^9.8.0",
     "@types/jest": "^30.0.0",
     "@types/supertest": "^6.0.3",
     "jest": "^30.0.2",
