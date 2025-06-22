@@ -36,6 +36,9 @@ describe('Brand API Test Suite', () => {
             expect(res.body.name).toEqual(data.name);
             expect(res.body).toHaveProperty('createdAt');
             newBrand = res.body;
+            // Below code for checking purpose - to remove in next commit
+            console.log("Printing the created brand");
+            console.log(newBrand);
         });
     });
 
@@ -53,6 +56,17 @@ describe('Brand API Test Suite', () => {
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(data.name);
             expect(res.body).toHaveProperty('createdAt');
+            // Below code for checking purpose - to remove in next commit
+            console.log("Printing the updated brand");
+            console.log(res.body);
+        });
+    });
+
+    describe('Delete Brand', () => {
+        it('DELETE Brand', async() => {
+            const res = await req.delete('/brands/' + newBrand._id);
+            expect(res.statusCode).toEqual(200);
+            expect(res.body).toBeNull();
         });
     });
 });
