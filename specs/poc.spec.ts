@@ -69,3 +69,15 @@ describe('PUT Requests', () => {
         expect(res.body.body).toEqual(data.body);
     });
 });
+
+describe('PATCH Requests', () => {
+    it('PATCH /posts/{id}', async() => {
+        const data = {
+            "title": "Only Updated Title"
+        }
+        const res = await req.put('/posts/1')
+            .send(data);
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.title).toEqual(data.title);
+    });
+});
