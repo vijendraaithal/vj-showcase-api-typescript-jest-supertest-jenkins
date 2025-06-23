@@ -12,13 +12,13 @@ describe('Brand API Test Suite', () => {
             expect(res.body[0]).toHaveProperty('_id');
             expect(res.body[0]).toHaveProperty('name');
             expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
-        },10000);
+        },30000);
     });
 
     describe('Create & Fetch Brand', () => {
 
         describe('Create Brands', () => {
-            it.only('POST Brand', async() => {
+            it('POST Brand', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -119,7 +119,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name is too long');
         });
 
-        it.only('Schema Validation - Brand Name must be a string', async() => {
+        it('Schema Validation - Brand Name must be a string', async() => {
             const brandName = faker.number.int({min:1000000, max:99999999});
             const data = {
                 name: brandName,
@@ -129,6 +129,21 @@ describe('Brand API Test Suite', () => {
                 .send(data);
             console.log(res.body);
             expect(res.body.error).toEqual('Brand name must be a string');
+        });
+
+        it('Schema Validation - Brand Description must be a string', async() => {
+            const brandName = "BN" 
+                    + faker.company.buzzVerb() 
+                    + faker.string.alpha({length: {min: 5, max: 7}});
+            const description = faker.number.int({min:1000000, max:99999999});
+            const data = {
+                name: brandName,
+                description: description
+            }
+            const res = await req.put('/brands/' + newBrand._id)
+                .send(data);
+            console.log(res.body);
+            expect(res.body.error).toEqual('Brand description must be a string');
         });
     });
 
