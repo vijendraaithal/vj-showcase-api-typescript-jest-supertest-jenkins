@@ -5,7 +5,7 @@ import {faker} from '@faker-js/faker';
 describe('Brand API Test Suite', () => {
     let newBrand: any;
     describe('Fetch Brands', () => {
-        it('GET Brands', async() => {
+        it('Validate - Get all brands & properties of first brand', async() => {
             const res = await req.get('/brands');
             expect(res.statusCode).toEqual(200);
             expect(res.body.length).toBeGreaterThanOrEqual(1);
@@ -18,7 +18,7 @@ describe('Brand API Test Suite', () => {
     describe('Create & Fetch Brand', () => {
 
         describe('Create Brands', () => {
-            it('POST Brand', async() => {
+            it('Validate - Creation of a new brand', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -34,7 +34,7 @@ describe('Brand API Test Suite', () => {
                 newBrand = res.body;
             });
 
-            it('Schema Validation - Name is mandatory field', async() => {
+            it('Validate - name is mandatory field', async() => {
                 const brandName = '';
                 const data = {
                     name: brandName,
@@ -46,7 +46,7 @@ describe('Brand API Test Suite', () => {
                 expect(res.body.error).toEqual('Name is required');
             });
 
-            it('Schema Validation - Min char length for name it Greater than 1', async() => {
+            it('Validation - min char length for name it greater than 1', async() => {
                 const brandName = 'a';
                 const data = {
                     name: brandName,
@@ -58,7 +58,7 @@ describe('Brand API Test Suite', () => {
                 expect(res.body.error).toEqual('Brand name is too short');
             });
 
-            it('Business Logic - Duplicate brand entries are not allowed', async() => {
+            it('Validate - duplicate brand entries are not allowed', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -77,7 +77,7 @@ describe('Brand API Test Suite', () => {
             });
         });
 
-        it('Business Logic Validation - GET Brand on invalid id', async() => {
+        it('Validate - search on invalid brand throws expected error', async() => {
             const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
             const res = await req.get('/brands/' + randomId);
             expect(res.statusCode).toEqual(404);
@@ -85,7 +85,7 @@ describe('Brand API Test Suite', () => {
         }, 30000);
 
 
-        it('GET Brand', async() => {
+        it('Validate - successful brand search on a valid brand id', async() => {
             const res = await req.get('/brands/' + newBrand._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(newBrand.name);
@@ -93,7 +93,7 @@ describe('Brand API Test Suite', () => {
     });
 
     describe('Update Brand', () => {
-        it('PUT Brand', async() => {
+        it('Validate - update of brand name', async() => {
             const brandName = "UPD-BN" 
                 + faker.company.buzzVerb() 
                 + faker.string.alpha({length: {min: 5, max: 7}});
@@ -108,7 +108,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body).toHaveProperty('createdAt');
         });
 
-        it('Schema Validation - Brand Name cannot be accept GT 30 chars', async() => {
+        it('Validate - brand name cannot be accept GT 30 chars', async() => {
             const brandName = faker.string.alphanumeric(31);
             const data = {
                 name: brandName,
@@ -119,7 +119,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name is too long');
         });
 
-        it('Schema Validation - Brand Name must be a string', async() => {
+        it('Validate - brand name must be a string', async() => {
             const brandName = faker.number.int({min:1000000, max:99999999});
             const data = {
                 name: brandName,
@@ -130,7 +130,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name must be a string');
         });
 
-        it('Schema Validation - Brand Description must be a string', async() => {
+        it('Validate - brand description must be a string', async() => {
             const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -144,7 +144,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand description must be a string');
         });
 
-        it('Business Logic Validation - Error on trying to update an invalid brand id', async() => {
+        it('Validate - error on trying to update an invalid brand id', async() => {
             const brandName = "BN" 
                 + faker.company.buzzVerb() 
                 + faker.string.alpha({length: {min: 5, max: 7}});
@@ -160,13 +160,13 @@ describe('Brand API Test Suite', () => {
     });
 
     describe('Delete Brand', () => {
-        it('DELETE Brand', async() => {
+        it('Validate - deletion of a brand', async() => {
             const res = await req.delete('/brands/' + newBrand._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body).toBeNull();
         });
 
-        it('Business Logic Validation - Error on trying to delete an invalid brand id', async() => {
+        it('Validate - error on trying to delete an invalid brand id', async() => {
             const res = await req.delete('/brands/' + '1234567890123456789012345')
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toEqual('Unable to delete brand'); 
