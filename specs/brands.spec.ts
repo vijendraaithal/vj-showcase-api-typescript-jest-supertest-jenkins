@@ -127,7 +127,6 @@ describe('Brand API Test Suite', () => {
             }
             const res = await req.put('/brands/' + newBrand._id)
                 .send(data);
-            console.log(res.body);
             expect(res.body.error).toEqual('Brand name must be a string');
         });
 
@@ -142,8 +141,21 @@ describe('Brand API Test Suite', () => {
             }
             const res = await req.put('/brands/' + newBrand._id)
                 .send(data);
-            console.log(res.body);
             expect(res.body.error).toEqual('Brand description must be a string');
+        });
+
+        it('Business Logic Validation - Error on trying to update an invalid brand id', async() => {
+            const brandName = "BN" 
+                + faker.company.buzzVerb() 
+                + faker.string.alpha({length: {min: 5, max: 7}});
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.put('/brands/' + '1234567890123456789012345')
+                .send(data);
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.error).toEqual('Unable to update brands'); 
         });
     });
 
@@ -152,6 +164,12 @@ describe('Brand API Test Suite', () => {
             const res = await req.delete('/brands/' + newBrand._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body).toBeNull();
+        });
+
+        it('Business Logic Validation - Error on trying to delete an invalid brand id', async() => {
+            const res = await req.delete('/brands/' + '1234567890123456789012345')
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.error).toEqual('Unable to delete brand'); 
         });
     });
 });
