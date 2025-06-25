@@ -5,7 +5,7 @@ import {faker} from '@faker-js/faker';
 describe('Brand API Test Suite', () => {
     let newBrand: any;
     describe('Fetch Brands', () => {
-        it('Validate - Get all brands & properties of first brand', async() => {
+        it('TC01 - Validate - Get all brands & properties of first brand', async() => {
             const res = await req.get('/brands');
             expect(res.statusCode).toEqual(200);
             expect(res.body.length).toBeGreaterThanOrEqual(1);
@@ -18,7 +18,7 @@ describe('Brand API Test Suite', () => {
     describe('Create & Fetch Brand', () => {
 
         describe('Create Brands', () => {
-            it('Validate - Creation of a new brand', async() => {
+            it('TC02 - Validate - Creation of a new brand', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -34,7 +34,7 @@ describe('Brand API Test Suite', () => {
                 newBrand = res.body;
             });
 
-            it('Validate - name is mandatory field', async() => {
+            it('TC03 - Validate - name is mandatory field', async() => {
                 const brandName = '';
                 const data = {
                     name: brandName,
@@ -46,7 +46,7 @@ describe('Brand API Test Suite', () => {
                 expect(res.body.error).toEqual('Name is required');
             });
 
-            it('Validation - min char length for name it greater than 1', async() => {
+            it('TC04 - Validation - min char length for name it greater than 1', async() => {
                 const brandName = 'a';
                 const data = {
                     name: brandName,
@@ -58,7 +58,7 @@ describe('Brand API Test Suite', () => {
                 expect(res.body.error).toEqual('Brand name is too short');
             });
 
-            it('Validate - duplicate brand entries are not allowed', async() => {
+            it('TC05 - Validate - duplicate brand entries are not allowed', async() => {
                 const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -77,7 +77,7 @@ describe('Brand API Test Suite', () => {
             });
         });
 
-        it('Validate - search on invalid brand throws expected error', async() => {
+        it('TC06 - Validate - search on invalid brand throws expected error', async() => {
             const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
             const res = await req.get('/brands/' + randomId);
             expect(res.statusCode).toEqual(404);
@@ -85,7 +85,7 @@ describe('Brand API Test Suite', () => {
         }, 30000);
 
 
-        it('Validate - successful brand search on a valid brand id', async() => {
+        it('TC07 - Validate - successful brand search on a valid brand id', async() => {
             const res = await req.get('/brands/' + newBrand._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(newBrand.name);
@@ -93,7 +93,7 @@ describe('Brand API Test Suite', () => {
     });
 
     describe('Update Brand', () => {
-        it('Validate - update of brand name', async() => {
+        it('TC08 - Validate - update of brand name', async() => {
             const brandName = "UPD-BN" 
                 + faker.company.buzzVerb() 
                 + faker.string.alpha({length: {min: 5, max: 7}});
@@ -108,7 +108,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body).toHaveProperty('createdAt');
         });
 
-        it('Validate - brand name cannot be accept GT 30 chars', async() => {
+        it('TC09 - Validate - brand name cannot be accept GT 30 chars', async() => {
             const brandName = faker.string.alphanumeric(31);
             const data = {
                 name: brandName,
@@ -119,7 +119,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name is too long');
         });
 
-        it('Validate - brand name must be a string', async() => {
+        it('TC10 - Validate - brand name must be a string', async() => {
             const brandName = faker.number.int({min:1000000, max:99999999});
             const data = {
                 name: brandName,
@@ -130,7 +130,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name must be a string');
         });
 
-        it('Validate - brand description must be a string', async() => {
+        it('TC11 - Validate - brand description must be a string', async() => {
             const brandName = "BN" 
                     + faker.company.buzzVerb() 
                     + faker.string.alpha({length: {min: 5, max: 7}});
@@ -144,7 +144,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand description must be a string');
         });
 
-        it('Validate - error on trying to update an invalid brand id', async() => {
+        it('TC12 - Validate - error on trying to update an invalid brand id', async() => {
             const brandName = "BN" 
                 + faker.company.buzzVerb() 
                 + faker.string.alpha({length: {min: 5, max: 7}});
@@ -160,13 +160,13 @@ describe('Brand API Test Suite', () => {
     });
 
     describe('Delete Brand', () => {
-        it('Validate - deletion of a brand', async() => {
+        it('TC13 - Validate - deletion of a brand', async() => {
             const res = await req.delete('/brands/' + newBrand._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body).toBeNull();
         });
 
-        it('Validate - error on trying to delete an invalid brand id', async() => {
+        it('TC14 - Validate - error on trying to delete an invalid brand id', async() => {
             const res = await req.delete('/brands/' + '1234567890123456789012345')
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toEqual('Unable to delete brand'); 
