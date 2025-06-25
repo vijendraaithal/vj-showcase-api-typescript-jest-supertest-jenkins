@@ -14,96 +14,93 @@ describe('Brand API Test Suite', () => {
             expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
         },30000);
     });
-
-    describe('Create & Fetch Brand', () => {
-
-        describe('Create Brands', () => {
-            it('TC02 - Validate - Creation of a new brand', async() => {
-                const brandName = "BN" 
-                    + faker.company.buzzVerb() 
-                    + faker.string.alpha({length: {min: 5, max: 7}});
-                const data = {
-                    name: brandName,
-                    description: "BD" + brandName
-                }
-                const res = await req.post('/brands')
-                    .send(data);
-                expect(res.statusCode).toEqual(200);
-                expect(res.body.name).toEqual(data.name);
-                expect(res.body).toHaveProperty('createdAt');
-                newBrand = res.body;
-            });
-
-            it('TC03 - Validate - name is mandatory field', async() => {
-                const brandName = '';
-                const data = {
-                    name: brandName,
-                    description: "BD" + brandName
-                }
-                const res = await req.post('/brands')
-                    .send(data);
-                expect(res.statusCode).toEqual(422);
-                expect(res.body.error).toEqual('Name is required');
-            });
-
-            it('TC04 - Validation - min char length for name it greater than 1', async() => {
-                const brandName = 'a';
-                const data = {
-                    name: brandName,
-                    description: "BD" + brandName
-                }
-                const res = await req.post('/brands')
-                    .send(data);
-                expect(res.statusCode).toEqual(422);
-                expect(res.body.error).toEqual('Brand name is too short');
-            });
-
-            it('TC05 - Validate - duplicate brand entries are not allowed', async() => {
-                const brandName = "BN" 
-                    + faker.company.buzzVerb() 
-                    + faker.string.alpha({length: {min: 5, max: 7}});
-                const data = {
-                    name: brandName,
-                    description: "BD" + brandName
-                }
-                const res = await req.post('/brands')
-                    .send(data);
-                expect(res.statusCode).toEqual(200);
-                const res2 = await req.post('/brands')
-                    .send(data);
-                expect(res2.statusCode).toEqual(422);
-                const expectedErrorMessage= `${brandName} already exists`;
-                expect(res2.body.error).toEqual(expectedErrorMessage);
-            });
+    
+    describe('Create Brands', () => {
+        it('TC02 - Validate - Creation of a new brand', async() => {
+            const brandName = "BN" 
+                + faker.company.buzzVerb() 
+                + faker.string.alpha({length: {min: 5, max: 7}});
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.post('/brands')
+                .send(data);
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.name).toEqual(data.name);
+            expect(res.body).toHaveProperty('createdAt');
+            newBrand = res.body;
         });
 
-        describe('Fetch Brands', () => {
-            let postBrand: any;
-            beforeAll(async() => {
-                const brandName = "BN" 
-                    + faker.company.buzzVerb() 
-                    + faker.string.alpha({length: {min: 5, max: 7}});
-                const data = {
-                    name: brandName,
-                    description: "BD" + brandName
-                }
-                postBrand = await req.post('/brands')
-                    .send(data);
+        it('TC03 - Validate - name is mandatory field', async() => {
+            const brandName = '';
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.post('/brands')
+                .send(data);
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.error).toEqual('Name is required');
+        });
 
-            });
-            it('TC06 - Validate - search on invalid brand throws expected error', async() => {
-                const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
-                const res = await req.get('/brands/' + randomId);
-                expect(res.statusCode).toEqual(404);
-                expect(res.body.error).toEqual('Brand not found.');
-            }, 30000);
+        it('TC04 - Validation - min char length for name it greater than 1', async() => {
+            const brandName = 'a';
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.post('/brands')
+                .send(data);
+            expect(res.statusCode).toEqual(422);
+            expect(res.body.error).toEqual('Brand name is too short');
+        });
+
+        it('TC05 - Validate - duplicate brand entries are not allowed', async() => {
+            const brandName = "BN" 
+                + faker.company.buzzVerb() 
+                + faker.string.alpha({length: {min: 5, max: 7}});
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            const res = await req.post('/brands')
+                .send(data);
+            expect(res.statusCode).toEqual(200);
+            const res2 = await req.post('/brands')
+                .send(data);
+            expect(res2.statusCode).toEqual(422);
+            const expectedErrorMessage= `${brandName} already exists`;
+            expect(res2.body.error).toEqual(expectedErrorMessage);
+        });
+    });
+
+    describe('Fetch Individual Brand', () => {
+        let postBrand: any;
+        beforeAll(async() => {
+            const brandName = "BN" 
+                + faker.company.buzzVerb() 
+                + faker.string.alpha({length: {min: 5, max: 7}});
+            const data = {
+                name: brandName,
+                description: "BD" + brandName
+            }
+            postBrand = await req.post('/brands')
+                .send(data);
+
+        });
+        it('TC06 - Validate - search on invalid brand throws expected error', async() => {
+            const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
+            const res = await req.get('/brands/' + randomId);
+            expect(res.statusCode).toEqual(404);
+            expect(res.body.error).toEqual('Brand not found.');
+        }, 30000);
 
 
-            it.only('TC07 - Validate - successful brand search on a valid brand id', async() => {
-                const res = await req.get('/brands/' + postBrand.body._id);
-                expect(res.statusCode).toEqual(200);
-                expect(res.body.name).toEqual(postBrand.body.name);
-            });
+        it.only('TC07 - Validate - successful brand search on a valid brand id', async() => {
+            const res = await req.get('/brands/' + postBrand.body._id);
+            expect(res.statusCode).toEqual(200);
+            expect(res.body.name).toEqual(postBrand.body.name);
         });
     });
 
