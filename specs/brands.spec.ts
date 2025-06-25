@@ -14,22 +14,24 @@ describe('Brand API Test Suite', () => {
             expect(Object.keys(res.body[0])).toEqual(['_id', 'name']);
         },30000);
     });
-    
-    describe('Create Brands', () => {
-        it('TC02 - Validate - Creation of a new brand', async() => {
-            const brandName = "BN" 
-                + faker.company.buzzVerb() 
-                + faker.string.alpha({length: {min: 5, max: 7}});
-            const data = {
-                name: brandName,
-                description: "BD" + brandName
-            }
-            const res = await req.post('/brands')
+
+    describe.only('Create Brands', () => {
+        let postBrand: any;
+        const brandName = "BN" 
+            + faker.company.buzzVerb() 
+            + faker.string.alpha({length: {min: 5, max: 7}});
+        const data = {
+            name: brandName,
+            description: "BD" + brandName
+        }
+        beforeAll(async() => {
+            postBrand = await req.post('/brands')
                 .send(data);
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toEqual(data.name);
-            expect(res.body).toHaveProperty('createdAt');
-            newBrand = res.body;
+        });
+        it('TC02 - Validate - Creation of a new brand', async() => {
+            expect(postBrand.statusCode).toEqual(200);
+            expect(postBrand.body.name).toEqual(data.name);
+            expect(postBrand.body).toHaveProperty('createdAt');
         });
 
         it('TC03 - Validate - name is mandatory field', async() => {
@@ -56,22 +58,13 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name is too short');
         });
 
-        it('TC05 - Validate - duplicate brand entries are not allowed', async() => {
-            const brandName = "BN" 
-                + faker.company.buzzVerb() 
-                + faker.string.alpha({length: {min: 5, max: 7}});
-            const data = {
-                name: brandName,
-                description: "BD" + brandName
-            }
+        it.only('TC05 - Validate - duplicate brand entries are not allowed', async() => {
+            // second request with same data
             const res = await req.post('/brands')
                 .send(data);
-            expect(res.statusCode).toEqual(200);
-            const res2 = await req.post('/brands')
-                .send(data);
-            expect(res2.statusCode).toEqual(422);
+            expect(res.statusCode).toEqual(422);
             const expectedErrorMessage= `${brandName} already exists`;
-            expect(res2.body.error).toEqual(expectedErrorMessage);
+            expect(res.body.error).toEqual(expectedErrorMessage);
         });
     });
 
