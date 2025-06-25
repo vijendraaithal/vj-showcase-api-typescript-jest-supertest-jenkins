@@ -77,18 +77,33 @@ describe('Brand API Test Suite', () => {
             });
         });
 
-        it('TC06 - Validate - search on invalid brand throws expected error', async() => {
-            const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
-            const res = await req.get('/brands/' + randomId);
-            expect(res.statusCode).toEqual(404);
-            expect(res.body.error).toEqual('Brand not found.');
-        }, 30000);
+        describe('Fetch Brands', () => {
+            let postBrand: any;
+            beforeAll(async() => {
+                const brandName = "BN" 
+                    + faker.company.buzzVerb() 
+                    + faker.string.alpha({length: {min: 5, max: 7}});
+                const data = {
+                    name: brandName,
+                    description: "BD" + brandName
+                }
+                postBrand = await req.post('/brands')
+                    .send(data);
+
+            });
+            it('TC06 - Validate - search on invalid brand throws expected error', async() => {
+                const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
+                const res = await req.get('/brands/' + randomId);
+                expect(res.statusCode).toEqual(404);
+                expect(res.body.error).toEqual('Brand not found.');
+            }, 30000);
 
 
-        it('TC07 - Validate - successful brand search on a valid brand id', async() => {
-            const res = await req.get('/brands/' + newBrand._id);
-            expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toEqual(newBrand.name);
+            it.only('TC07 - Validate - successful brand search on a valid brand id', async() => {
+                const res = await req.get('/brands/' + postBrand.body._id);
+                expect(res.statusCode).toEqual(200);
+                expect(res.body.name).toEqual(postBrand.body.name);
+            });
         });
     });
 
