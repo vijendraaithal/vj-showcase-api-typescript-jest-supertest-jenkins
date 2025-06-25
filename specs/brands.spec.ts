@@ -15,7 +15,7 @@ describe('Brand API Test Suite', () => {
         },30000);
     });
 
-    describe.only('Create Brands', () => {
+    describe('Create Brands', () => {
         let postBrand: any;
         const brandName = "BN" 
             + faker.company.buzzVerb() 
@@ -58,7 +58,7 @@ describe('Brand API Test Suite', () => {
             expect(res.body.error).toEqual('Brand name is too short');
         });
 
-        it.only('TC05 - Validate - duplicate brand entries are not allowed', async() => {
+        it('TC05 - Validate - duplicate brand entries are not allowed', async() => {
             // second request with same data
             const res = await req.post('/brands')
                 .send(data);
@@ -70,18 +70,18 @@ describe('Brand API Test Suite', () => {
 
     describe('Fetch Individual Brand', () => {
         let postBrand: any;
+        const brandName = "BN" 
+            + faker.company.buzzVerb() 
+            + faker.string.alpha({length: {min: 5, max: 7}});
+        const data = {
+            name: brandName,
+            description: "BD" + brandName
+        }
         beforeAll(async() => {
-            const brandName = "BN" 
-                + faker.company.buzzVerb() 
-                + faker.string.alpha({length: {min: 5, max: 7}});
-            const data = {
-                name: brandName,
-                description: "BD" + brandName
-            }
             postBrand = await req.post('/brands')
                 .send(data);
-
         });
+
         it('TC06 - Validate - search on invalid brand throws expected error', async() => {
             const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
             const res = await req.get('/brands/' + randomId);
@@ -90,7 +90,7 @@ describe('Brand API Test Suite', () => {
         }, 30000);
 
 
-        it.only('TC07 - Validate - successful brand search on a valid brand id', async() => {
+        it('TC07 - Validate - successful brand search on a valid brand id', async() => {
             const res = await req.get('/brands/' + postBrand.body._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(postBrand.body.name);
@@ -98,18 +98,29 @@ describe('Brand API Test Suite', () => {
     });
 
     describe('Update Brand', () => {
-        it('TC08 - Validate - update of brand name', async() => {
-            const brandName = "UPD-BN" 
-                + faker.company.buzzVerb() 
-                + faker.string.alpha({length: {min: 5, max: 7}});
-            const data = {
-                name: brandName,
-                description: "BD" + brandName
-            }
-            const res = await req.put('/brands/' + newBrand._id)
+        
+        let postBrand: any;
+        const brandName = "BN" 
+            + faker.company.buzzVerb() 
+            + faker.string.alpha({length: {min: 5, max: 7}});
+        const data = {
+            name: brandName,
+            description: "BD" + brandName
+        }
+        beforeAll(async() => {
+            postBrand = await req.post('/brands')
                 .send(data);
+            console.log(postBrand.body);
+        });
+
+        it.only('TC08 - Validate - update of brand name', async() => {
+            const dataUpdated = {
+                name: "UPD" + brandName
+            }
+            const res = await req.put('/brands/' + postBrand.body._id)
+                .send(dataUpdated);
             expect(res.statusCode).toEqual(200);
-            expect(res.body.name).toEqual(data.name);
+            expect(res.body.name).toEqual(dataUpdated.name);
             expect(res.body).toHaveProperty('createdAt');
         });
 
