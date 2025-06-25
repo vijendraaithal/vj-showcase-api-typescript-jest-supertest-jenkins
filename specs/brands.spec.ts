@@ -1,12 +1,11 @@
-import * as supertest from 'supertest';
-const req = supertest('https://practice-react.sdetunicorns.com/api/test');
 import {faker} from '@faker-js/faker';
+import controller from '../controller/brand.controller';
 
 describe('Brand API Test Suite', () => {
     let newBrand: any;
     describe('Fetch Brands', () => {
         it('TC01 - Validate - Get all brands & properties of first brand', async() => {
-            const res = await req.get('/brands');
+            const res = await controller.getBrands();
             expect(res.statusCode).toEqual(200);
             expect(res.body.length).toBeGreaterThanOrEqual(1);
             expect(res.body[0]).toHaveProperty('_id');
@@ -25,8 +24,7 @@ describe('Brand API Test Suite', () => {
             description: "BD" + brandName
         }
         beforeAll(async() => {
-            postBrand = await req.post('/brands')
-                .send(data);
+            postBrand = await controller.postBrands(data);
         });
         it('TC02 - Validate - Creation of a new brand', async() => {
             expect(postBrand.statusCode).toEqual(200);
@@ -40,8 +38,7 @@ describe('Brand API Test Suite', () => {
                 name: brandName,
                 description: "BD" + brandName
             }
-            const res = await req.post('/brands')
-                .send(data);
+            const res = await controller.postBrands(data);
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toEqual('Name is required');
         });
@@ -52,24 +49,21 @@ describe('Brand API Test Suite', () => {
                 name: brandName,
                 description: "BD" + brandName
             }
-            const res = await req.post('/brands')
-                .send(data);
+            const res = await controller.postBrands(data);
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toEqual('Brand name is too short');
         });
 
         it('TC05 - Validate - duplicate brand entries are not allowed', async() => {
             // second request with same data
-            const res = await req.post('/brands')
-                .send(data);
+            const res = await controller.postBrands(data)
             expect(res.statusCode).toEqual(422);
             const expectedErrorMessage= `${brandName} already exists`;
             expect(res.body.error).toEqual(expectedErrorMessage);
         });
 
         afterAll(async() => {
-            console.log(postBrand.body.name);
-            await req.delete('/brands/' + postBrand.body._id);
+            await controller.deleteBrand(postBrand.body._id);
         });
     });
 
@@ -83,27 +77,25 @@ describe('Brand API Test Suite', () => {
             description: "BD" + brandName
         }
         beforeAll(async() => {
-            postBrand = await req.post('/brands')
-                .send(data);
+            postBrand = await controller.postBrands(data);
         });
 
         it('TC06 - Validate - search on invalid brand throws expected error', async() => {
             const randomId = Math.round(Date.now()/1000).toString(16) + faker.string.numeric({length: 16}) ;
-            const res = await req.get('/brands/' + randomId);
+            const res = await controller.getBrandById(randomId);
             expect(res.statusCode).toEqual(404);
             expect(res.body.error).toEqual('Brand not found.');
         }, 30000);
 
 
         it('TC07 - Validate - successful brand search on a valid brand id', async() => {
-            const res = await req.get('/brands/' + postBrand.body._id);
+            const res = await controller.getBrandById(postBrand.body._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(postBrand.body.name);
         });
 
         afterAll(async() => {
-            console.log(postBrand.body.name);
-            await req.delete('/brands/' + postBrand.body._id);
+            await controller.deleteBrand(postBrand.body._id);
         });
     });
 
@@ -118,16 +110,14 @@ describe('Brand API Test Suite', () => {
             description: "BD" + brandName
         }
         beforeAll(async() => {
-            postBrand = await req.post('/brands')
-                .send(data);
+            postBrand = await controller.postBrands(data);
         });
 
         it('TC08 - Validate - update of brand name', async() => {
             const dataUpdated = {
                 name: "UPD" + brandName
             }
-            const res = await req.put('/brands/' + postBrand.body._id)
-                .send(dataUpdated);
+            const res = await controller.putBrands(postBrand.body._id, dataUpdated);
             expect(res.statusCode).toEqual(200);
             expect(res.body.name).toEqual(dataUpdated.name);
             expect(res.body).toHaveProperty('createdAt');
@@ -139,8 +129,7 @@ describe('Brand API Test Suite', () => {
                 name: brandName,
                 description: "BD" + brandName
             }
-            const res = await req.put('/brands/' + postBrand.body._id)
-                .send(data);
+            const res = await controller.putBrands(postBrand.body._id,data);
             expect(res.body.error).toEqual('Brand name is too long');
         });
 
@@ -150,8 +139,7 @@ describe('Brand API Test Suite', () => {
                 name: brandName,
                 description: "BD" + brandName
             }
-            const res = await req.put('/brands/' + postBrand.body._id)
-                .send(data);
+            const res = await controller.putBrands(postBrand.body._id, data);
             expect(res.body.error).toEqual('Brand name must be a string');
         });
 
@@ -164,8 +152,7 @@ describe('Brand API Test Suite', () => {
                 name: brandName,
                 description: description
             }
-            const res = await req.put('/brands/' + postBrand.body._id)
-                .send(data);
+            const res = await controller.putBrands(postBrand.body._id, data);
             expect(res.body.error).toEqual('Brand description must be a string');
         });
 
@@ -177,15 +164,13 @@ describe('Brand API Test Suite', () => {
                 name: brandName,
                 description: "BD" + brandName
             }
-            const res = await req.put('/brands/' + '1234567890123456789012345')
-                .send(data);
+            const res = await controller.putBrands('1234567890123456789012345',data);
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toEqual('Unable to update brands'); 
         });
 
         afterAll(async() => {
-            console.log(postBrand.body.name);
-            await req.delete('/brands/' + postBrand.body._id);
+            await controller.deleteBrand(postBrand.body._id);
         });
     });
 
@@ -199,17 +184,16 @@ describe('Brand API Test Suite', () => {
             description: "BD" + brandName
         }
         beforeAll(async() => {
-            postBrand = await req.post('/brands')
-                .send(data);
+            postBrand = await controller.postBrands(data);
         });
         it('TC13 - Validate - deletion of a brand', async() => {
-            const res = await req.delete('/brands/' + postBrand.body._id);
+            const res = await controller.deleteBrand(postBrand.body._id);
             expect(res.statusCode).toEqual(200);
             expect(res.body).toBeNull();
         });
 
         it('TC14 - Validate - error on trying to delete an invalid brand id', async() => {
-            const res = await req.delete('/brands/' + '1234567890123456789012345')
+            const res = await controller.deleteBrand('1234567890123456789012345')
             expect(res.statusCode).toEqual(422);
             expect(res.body.error).toEqual('Unable to delete brand'); 
         });

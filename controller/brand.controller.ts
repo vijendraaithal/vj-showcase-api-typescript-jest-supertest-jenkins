@@ -6,7 +6,7 @@ class BrandController {
         return req.get('/brands');
     }
 
-    getBrandsById(id: string) {
+    getBrandById(id: string) {
         return req.get('/brands/' + id);
     }
 
@@ -15,12 +15,12 @@ class BrandController {
                 .send(data);
     }
 
-    putBrands(id: string,data: {[key: string]: string}) {
+    putBrands(id: string,data: {[key: string]: string | number}) {
         return req.put('/brands/' + id)
                 .send(data);
     }
 
-    deleteBrands(id: string) {
+    deleteBrand(id: string) {
         return req.delete('/brands/' + id);
     }
 }
